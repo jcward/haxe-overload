@@ -3,8 +3,8 @@ Haxe macro library to support overloaded functions in static extensions
 
 ## Terminology
 
-Let's use the simple phrase "tools class" to mean, a class with (zero or more) overloaded extension methods,
-meant to be used as a static extension.
+Let's use the simple phrase "tools class" to mean, a class with (zero or more) overloaded methods,
+intended to be used as a static extension.
 
 ## Requirements
 
