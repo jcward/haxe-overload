@@ -11,6 +11,7 @@ meant to be used as a static extension.
 - Your tools class must implement `SEOMacro.Overloaded`
 - Overloaded methods must be static functions of a tools class.
 - Currently, each function name (e.g. `replace`) can only be defined in a single tools class.
+- Code completion is not yet implemented, but there [is hope](https://twitter.com/Jeff__Ward/status/1014891629612707842) for proper completion...
 
 ## Install
 
