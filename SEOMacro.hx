@@ -117,13 +117,28 @@ class SEOMacro
     return fields;
   }
 
+  private static function subject_has_field(subject:Expr, field_name:String):SHFResult
+  {
+    try {
+      switch Context.typeof(subject) {
+        case TInst(cls, cls_params):
+          for (field in cls.get().fields.get()) if (field.name==field_name) return SHF_TRUE;
+        default:
+      }
+    } catch (e:Dynamic) {
+      return SHF_UNKNOWN;
+    }
+
+    return SHF_FALSE;
+  }
+
   private static function modifyExpr(expr:Expr, se_info:SEInfoType):Expr
   {
     if (expr == null) return null;
 
     switch (expr.expr) {
       case ECall({ expr:EField(subject, field_name) }, params):
-        if (se_info.cnt_per_field.exists(field_name)) {
+        if (subject_has_field(subject, field_name)!=SHF_TRUE && se_info.cnt_per_field.exists(field_name)) {
           var mapped_params = [ for (e in params) modifyExpr(e, se_info) ];
           var pe:Expr = macro $a{ mapped_params };
           var rtn = macro SEOMacro.check_se($subject, $v{ field_name }, $v{ se_info.cls_name }, $v{ se_info.cnt_per_field.get(field_name) }, ($pe : Array<Dynamic>));
@@ -150,6 +165,11 @@ class SEOMacro
   public static function check_se(subject:Expr, field_name:String, cls_name:String, num:Int, params:Expr):Expr
   {
     var ps = unwrap_to_array(params.expr);
+
+    if (subject_has_field(subject, field_name)!=SHF_FALSE) {
+      // TODO: check other usings? Issue #3
+      return macro $e{ subject }.$field_name( $a{ ps} );
+    }
 
     // Put the subject expression first in the list
     ps.unshift( subject );
@@ -195,4 +215,10 @@ class SEOMacro
 @:autoBuild(SEOMacro.build_overloaded())
 interface Overloaded
 {
+}
+
+enum SHFResult {
+  SHF_UNKNOWN;
+  SHF_TRUE;
+  SHF_FALSE;
 }

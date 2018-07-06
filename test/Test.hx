@@ -18,5 +18,16 @@ class Test
     // uses the third signature
     s = s.replace(~/[aeiou]/g, function(match) { return match.toUpperCase(); });
     trace(s); // OUr thIng
+
+    var q = new Foo();
+    q.replace();
+  }
+}
+
+class Foo
+{
+  public function new() { }
+  public function replace() {
+    trace('Oh no, I got shadowed!');
   }
 }
