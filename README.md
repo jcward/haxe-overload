@@ -6,10 +6,14 @@ Haxe macro library to support overloaded functions in static extensions
 Let's use the simple phrase "tools class" to mean, a class with (zero or more) overloaded extension methods,
 meant to be used as a static extension.
 
-## Requirements & Limitations
+## Requirements
 
 - Your tools class must implement `SEOMacro.Overloaded`
 - Overloaded methods must be static functions of a tools class.
+
+## Limitations
+
+- The functions are renamed under the hood, so you can't call them dynamically at runtime. Let me know if you're interested in runtime invocation.
 - Currently, each function name (e.g. `replace`) can only be defined in a single tools class.
 - Code completion is not yet implemented, but there [is hope](https://twitter.com/Jeff__Ward/status/1014891629612707842) for proper completion...
 
