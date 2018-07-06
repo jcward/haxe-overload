@@ -1,0 +1,11 @@
+{
+	"name": "seoverload",
+	"url": "http://github.com/jcward/haxe-seoverload",
+	"license": "MIT",
+	"tags": ["cross","macro","utility"],
+	"description": "Haxe macro library to support overloaded functions in static extensions.",
+	"version": "0.0.1",
+	"releasenote": "See recently closed issues in github.",
+	"contributors": [ "jeff.ward" ],
+	"dependencies": {}
+}

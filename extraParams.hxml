@@ -1,0 +1,1 @@
+--macro addGlobalMetadata("", "@:build(SEOMacro.build_all())")
