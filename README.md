@@ -1,7 +1,8 @@
 # haxe-seoverload
 Haxe macro library to support overloaded functions in static extensions
 
-Status: beta
+- Status: beta
+- [Discussion thread](https://community.haxe.org/t/toying-with-a-macro-for-overloading-via-static-extension/840/)
 
 ## Terminology
 
