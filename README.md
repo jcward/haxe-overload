@@ -23,7 +23,7 @@ It lets you write libraries that look like this:
 
 And by `using MyStringTools` it provides overloaded functions via static extension, even with proper code completion:
 
-![image](https://user-images.githubusercontent.com/2192439/42592387-93132f28-8506-11e8-9cea-3489b1b0d73e.png)
+![compl](https://user-images.githubusercontent.com/2192439/42593316-54306188-8509-11e8-86ed-cea293722f59.gif)
 
 ## Limitations
 
