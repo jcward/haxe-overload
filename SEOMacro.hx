@@ -67,8 +67,56 @@ class SEOMacro
     // var meta_expr = Context.parse('[ '+[ for (key in seoverload_cnt.keys()) '"$key" => ${ seoverload_cnt.get(key) }' ].join(',')+']', Context.currentPos());
     cls.meta.add(SEO_META_NAME, seoverload_metadata, Context.currentPos());
 
+#if display // In display mode, generate a custom class with @:overload metadata
+    var cls_name = (cls.pack.length>0 ? cls.pack.join('.') : '') + '.' + cls.name;
+    handle_display_mode(cls_name, fields_by_name);
+#end
+
     return fields;
   }
+
+
+#if display
+  // In display mode, we need to populate a method with the proper @:overload
+  // so that we can display multiple function signatures:
+  private static function handle_display_mode(cls_name:String, fields_by_name:StringMap<Array<Field>>)
+  {
+    var dcn = display_class_name(cls_name);
+    var ot = macro class $dcn { };
+    for (name in fields_by_name.keys()) {
+      // Only fields with more than 1 instance
+      var overloads = fields_by_name.get(name);
+      if (overloads.length<2) continue;
+      // Take the first field, and put it on the display class
+      var first = overloads.shift();
+      first = {
+        name:name,
+        access:first.access,
+        kind:first.kind,
+        pos:first.pos,
+        meta:first.meta
+      };
+      ot.fields.push(first);
+      // Take the remaining fields, and set @:overload metadata with them:
+      for (other in overloads) {
+        switch other.kind {
+          case FFun(f):
+            var signature = { expr:EFunction(null, { args:f.args, ret:f.ret, expr:{ expr:EBlock([]), pos:first.pos} }), pos:first.pos };
+            var overload_meta = { name:':overload', params:[signature], pos:first.pos };
+            first.meta.push(overload_meta);
+          default:
+        }
+      }
+    }
+
+    // Define the for-display-only class:
+    Context.defineType(ot);
+  }
+  private static function display_class_name(n:String):String
+  {
+    return 'Overloaded__${ n.split(".").join("_") }';
+  }
+#end
 
   // Build macro added to *all* classes be extraParams.hxml -- careful,
   // be extremely performance minded
@@ -127,8 +175,15 @@ class SEOMacro
         if (se_info.cnt_per_field.exists(field_name)) {
           var mapped_params = [ for (e in params) modifyExpr(e, se_info) ];
           var pe:Expr = macro $a{ mapped_params };
-          var rtn = macro SEOMacro.check_se($subject, $v{ field_name }, $v{ se_info.cls_name }, $v{ se_info.cnt_per_field.get(field_name) }, ($pe : Array<Dynamic>));
-          rtn.pos = expr.pos; // Report type errors at the site of the funciton call
+          #if display
+            // In display mode, we bounce the call to a generated Overload__<cls_name> clss,
+            // which has a <field_name> function with the proper @:overload metadata.
+            var disp_cls = display_class_name(se_info.cls_name);
+            var rtn = macro $i{ disp_cls }.$field_name(($pe : Array<Expr>));
+          #else
+            var rtn = macro SEOMacro.check_se($subject, $v{ field_name }, $v{ se_info.cls_name }, $v{ se_info.cnt_per_field.get(field_name) }, ($pe : Array<Expr>));
+          #end
+          rtn.pos = expr.pos; // Report type errors at the site of the function call
           // trace(rtn.toString());
           return rtn;
         }
