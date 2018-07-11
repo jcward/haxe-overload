@@ -24,7 +24,12 @@ class Test
   }
 }
 
-class Foo
+class Foo extends Base
+{
+  public function new() { super(); }
+}
+
+class Base
 {
   public function new() { }
   public function replace() {

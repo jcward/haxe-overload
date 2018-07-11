@@ -117,20 +117,6 @@ class SEOMacro
     return fields;
   }
 
-  private static function subject_has_field(subject:Expr, field_name:String):SHFResult
-  {
-    try {
-      switch Context.typeof(subject) {
-        case TInst(cls, cls_params):
-          for (field in cls.get().fields.get()) if (field.name==field_name) return SHF_TRUE;
-        default:
-      }
-    } catch (e:Dynamic) {
-      return SHF_UNKNOWN;
-    }
-
-    return SHF_FALSE;
-  }
 
   private static function modifyExpr(expr:Expr, se_info:SEInfoType):Expr
   {
@@ -138,7 +124,7 @@ class SEOMacro
 
     switch (expr.expr) {
       case ECall({ expr:EField(subject, field_name) }, params):
-        if (subject_has_field(subject, field_name)!=SHF_TRUE && se_info.cnt_per_field.exists(field_name)) {
+        if (se_info.cnt_per_field.exists(field_name)) {
           var mapped_params = [ for (e in params) modifyExpr(e, se_info) ];
           var pe:Expr = macro $a{ mapped_params };
           var rtn = macro SEOMacro.check_se($subject, $v{ field_name }, $v{ se_info.cls_name }, $v{ se_info.cnt_per_field.get(field_name) }, ($pe : Array<Dynamic>));
@@ -166,12 +152,18 @@ class SEOMacro
   {
     var ps = unwrap_to_array(params.expr);
 
-    if (subject_has_field(subject, field_name)!=SHF_FALSE) {
-      // TODO: check other usings? Issue #3
-      return macro $e{ subject }.$field_name( $a{ ps} );
-    }
+    // First, check if subject function call is valid (without overloading)
+    try {
+      var eval = macro ${ subject }.$field_name($a{ ps });
+      //trace('${ eval.toString() }');
+      var t = Context.typeof(eval);
+      //trace('WITHOUT OVERLOADING, TYPE IS: $t');
+      return eval;
+    } catch (e:Dynamic) { }
 
-    // Put the subject expression first in the list
+    // No? Ok, let's check overloads...
+
+    // Put the subject expression first in the list (ala static extension)
     ps.unshift( subject );
 
     // We will simply try typing each function call.
@@ -183,8 +175,9 @@ class SEOMacro
       var eval = macro $p{ cls_name.split('.') }.$expanded_field($a{ ps });
 
       try {
+        //trace('${ eval.toString() }');
         var t = Context.typeof(eval);
-        // trace('TYPE IS: $t');
+        //trace('WITH OVERLOADING, TYPE IS: $t');
         return eval;
       } catch (e:Dynamic) {
         // Not correctly typed, try the next signature
@@ -215,10 +208,4 @@ class SEOMacro
 @:autoBuild(SEOMacro.build_overloaded())
 interface Overloaded
 {
-}
-
-enum SHFResult {
-  SHF_UNKNOWN;
-  SHF_TRUE;
-  SHF_FALSE;
 }
