@@ -1,6 +1,6 @@
 package pkg;
 
-class MyStringTools implements SEOMacro.Overloaded
+class MyStringTools implements OverloadMacro.IOverloaded
 {
   public static function replace(haystack:String, needle:String, by:String):String {
     return StringTools.replace(haystack, needle, by);

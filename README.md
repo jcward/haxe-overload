@@ -1,4 +1,4 @@
-# haxe-seoverload
+# haxe-overload
 Haxe macro library to support overloaded functions (via static extension, or abstract.)
 
 - Status: beta
@@ -37,37 +37,37 @@ intended to be used as a static extension.
 
 ## Requirements
 
-- Your tools class must implement `SEOMacro.Overloaded`
+- Your tools class must implement `OverloadMacro.IOverloaded`
 - Overloaded methods must be static functions of a tools class.
 
 ## Install
 
 ### Via Haxelib:
 
-1) Install: `haxelib install seoverload`
+1) Install: `haxelib install overload`
 
-2) Add to your build.hxml file: `-lib seoverload`
+2) Add to your build.hxml file: `-lib overload`
 
 ### Manually:
 
-1) Copy `SEOMacro.hx` into your class path
+1) Copy `OverloadMacro.hx` into your class path
 
 2) Add to your build.hxml file the contents of extraParams.hxml:
 
 ```haxe
---macro addGlobalMetadata("", "@:build(SEOMacro.build_all())")
+--macro addGlobalMetadata("", "@:build(OverloadMacro.build_all())")
 ```
 
 ## Usage
 
-The seoverload library doesn't include any tools classes by default. You're expected
+The overload library doesn't include any tools classes by default. You're expected
 to write them. Here's an example tools class:
 
 ```haxe
 package some.pkg;
 
 // Provides three replace methods on String, similar to JavaScript's str.replace()
-class MyStringTools implements SEOMacro.Overloaded
+class MyStringTools implements OverloadMacro.IOverloaded
 {
   public static function replace(haystack:String, needle:String, by:String):String {
     return StringTools.replace(haystack, needle, by);

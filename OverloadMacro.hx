@@ -12,16 +12,16 @@ using haxe.macro.TypeTools;
 
 using Lambda;
 
-typedef SEInfoType = {
+typedef OVInfoType = {
   se_cls : haxe.macro.Type.ClassType,
   cnt_per_field : StringMap<Int>,
   cls_name:String
 }
 
-class SEOMacro
+class OverloadMacro
 {
 
-  private static inline var SEO_META_NAME = 'seoverload';
+  private static inline var OVERLOAD_META_NAME = 'overload_macro';
   private static inline function overload_suffix(i:Int) return '__ovr_${i}';
 
   // Build macro that runs on the overloaded SE Tools classes
@@ -43,15 +43,15 @@ class SEOMacro
       }
     }
 
-    var seoverload_metadata = [];
+    var overload_metadata = [];
     for (name in fields_by_name.keys()) {
       // Only fields with more than 1 instance
       if (fields_by_name.get(name).length<2) continue;
 
       // Hmm, can't push a Map<String, Int> through meta...
-      // seoverload_cnt.set(name, fields_by_name.get(name).length);
-      seoverload_metadata.push(macro $v{ name });
-      seoverload_metadata.push(macro $v{ fields_by_name.get(name).length });
+      // overload_cnt.set(name, fields_by_name.get(name).length);
+      overload_metadata.push(macro $v{ name });
+      overload_metadata.push(macro $v{ fields_by_name.get(name).length });
       var i = 0;
       for (field in fields_by_name.get(name)) {
         // Need to rename the fields.
@@ -64,8 +64,8 @@ class SEOMacro
 
     // Add overload metadata (StringMap<Int> didn't work in getValue... using Dynamic)
     // Could map this way...
-    // var meta_expr = Context.parse('[ '+[ for (key in seoverload_cnt.keys()) '"$key" => ${ seoverload_cnt.get(key) }' ].join(',')+']', Context.currentPos());
-    cls.meta.add(SEO_META_NAME, seoverload_metadata, Context.currentPos());
+    // var meta_expr = Context.parse('[ '+[ for (key in overload_cnt.keys()) '"$key" => ${ overload_cnt.get(key) }' ].join(',')+']', Context.currentPos());
+    cls.meta.add(OVERLOAD_META_NAME, overload_metadata, Context.currentPos());
 
 #if display // In display mode, generate a custom class with @:overload metadata
     var cls_name = (cls.pack.length>0 ? cls.pack.join('.') : '') + '.' + cls.name;
@@ -134,21 +134,21 @@ class SEOMacro
       var se_cls = used.get();
 
       // Check for the overloaded metadata
-      var meta = se_cls.meta.extract(SEO_META_NAME)[0];
+      var meta = se_cls.meta.extract(OVERLOAD_META_NAME)[0];
       if (!(meta!=null && meta.params!=null && meta.params.length>0)) continue;
 
       // Convert metadata to StringMap<Int> (why doesn't $v{} support ["foo"=>5] ?)
-      var seoverload_cnt = new StringMap<Int>();
+      var overload_cnt = new StringMap<Int>();
       var i = 0;
       while (i<meta.params.length) {
-        seoverload_cnt.set( meta.params[i].getValue(), meta.params[i+1].getValue() );
+        overload_cnt.set( meta.params[i].getValue(), meta.params[i+1].getValue() );
         i += 2;
       }
-      // trace(seoverload_cnt); // e.g. { replace=>5, to_array=>3 }
+      // trace(overload_cnt); // e.g. { replace=>5, to_array=>3 }
 
       // trace('In ${ cls.name } using: ${ se_cls.name }');
       var cls_name = (se_cls.pack.length>0 ? se_cls.pack.join('.') : '') + '.' + se_cls.name;
-      var se_info = { se_cls:se_cls, cnt_per_field:seoverload_cnt, cls_name:cls_name };
+      var se_info = { se_cls:se_cls, cnt_per_field:overload_cnt, cls_name:cls_name };
       
       for(field in fields) {
         switch (field.kind) {
@@ -166,7 +166,7 @@ class SEOMacro
   }
 
 
-  private static function modifyExpr(expr:Expr, se_info:SEInfoType):Expr
+  private static function modifyExpr(expr:Expr, se_info:OVInfoType):Expr
   {
     if (expr == null) return null;
 
@@ -181,7 +181,7 @@ class SEOMacro
             var disp_cls = display_class_name(se_info.cls_name);
             var rtn = macro $i{ disp_cls }.$field_name(($pe : Array<Expr>));
           #else
-            var rtn = macro SEOMacro.check_se($subject, $v{ field_name }, $v{ se_info.cls_name }, $v{ se_info.cnt_per_field.get(field_name) }, ($pe : Array<Expr>));
+            var rtn = macro OverloadMacro.check_se($subject, $v{ field_name }, $v{ se_info.cls_name }, $v{ se_info.cnt_per_field.get(field_name) }, ($pe : Array<Expr>));
           #end
           rtn.pos = expr.pos; // Report type errors at the site of the function call
           // trace(rtn.toString());
@@ -250,7 +250,7 @@ class SEOMacro
 
 import haxe.macro.Expr;
 
-class SEOMacro
+class OverloadMacro
 {
   public static macro function check_se(subject:Expr, field_name:String, cls_name:String, num:Int, params:Expr):Expr
   {
@@ -260,7 +260,7 @@ class SEOMacro
 
 #end
 
-@:autoBuild(SEOMacro.build_overloaded())
-interface Overloaded
+@:autoBuild(OverloadMacro.build_overloaded())
+interface IOverloaded
 {
 }
