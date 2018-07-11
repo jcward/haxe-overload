@@ -19,7 +19,7 @@ function signature, and 2) proper VSCode completion support. That is precisely w
 
 It lets you write libraries that look like this:
 
-![image](https://user-images.githubusercontent.com/2192439/42592807-e0e107a6-8507-11e8-96fe-4800a342d82e.png)
+![image](https://user-images.githubusercontent.com/2192439/42594874-bb05089c-850d-11e8-90b8-7e5cd50ab7d9.png)
 
 And by `using MyStringTools` it provides overloaded functions via static extension, even with proper code completion:
 
