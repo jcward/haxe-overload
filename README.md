@@ -1,7 +1,8 @@
 # haxe-seoverload
 Haxe macro library to support overloaded functions in static extensions
 
-Status: beta
+- Status: beta
+- [Discussion thread](https://community.haxe.org/t/toying-with-a-macro-for-overloading-via-static-extension/840/)
 
 ## Terminology
 
@@ -33,7 +34,7 @@ intended to be used as a static extension.
 
 2) Add to your build.hxml file the contents of extraParams.hxml:
 
-```
+```haxe
 --macro addGlobalMetadata("", "@:build(SEOMacro.build_all())")
 ```
 
@@ -42,7 +43,7 @@ intended to be used as a static extension.
 The seoverload library doesn't include any tools classes by default. You're expected
 to write them. Here's an example tools class:
 
-```
+```haxe
 package some.pkg;
 
 // Provides three replace methods on String, similar to JavaScript's str.replace()
@@ -66,7 +67,7 @@ class MyStringTools implements SEOMacro.Overloaded
 
 And now you can use this tools class like so:
 
-```
+```haxe
 using some.pkg.MyStringTools;
 
 class Test
