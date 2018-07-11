@@ -1,8 +1,34 @@
 # haxe-seoverload
-Haxe macro library to support overloaded functions in static extensions
+Haxe macro library to support overloaded functions (via static extension, or abstract.)
 
 - Status: beta
 - [Discussion thread](https://community.haxe.org/t/toying-with-a-macro-for-overloading-via-static-extension/840/)
+
+## Purpose
+
+Haxe doesn't natively support overloaded functions. That's probably for the best. But some
+APIs just feel nicer with overloaded methods.
+
+For example, I suggest JavaScript's [String.replace](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+API -- which takes strings, regular expressions, and a replacement string or a replacer function -- is rather tidy. I don't have
+to remember that, in Haxe's native API, these capabilities are spread out under `StringTools.replace`, `EReg.replace`,
+and `EReg.map`.
+
+But to achieve this in native, staticly typed Haxe, I'd need 1) some way to map my calls to the correct
+function signature, and 2) proper VSCode completion support. That is precisely what this library does.
+
+It lets you write libraries that look like this:
+
+![image](https://user-images.githubusercontent.com/2192439/42592807-e0e107a6-8507-11e8-96fe-4800a342d82e.png)
+
+And provides completion that looks like this:
+
+![image](https://user-images.githubusercontent.com/2192439/42592387-93132f28-8506-11e8-9cea-3489b1b0d73e.png)
+
+## Limitations
+
+- The functions are renamed under the hood, so you can't call them dynamically at runtime. Let me know if you're interested in runtime invocation.
+- See issues.
 
 ## Terminology
 
@@ -13,12 +39,6 @@ intended to be used as a static extension.
 
 - Your tools class must implement `SEOMacro.Overloaded`
 - Overloaded methods must be static functions of a tools class.
-
-## Limitations
-
-- The functions are renamed under the hood, so you can't call them dynamically at runtime. Let me know if you're interested in runtime invocation.
-- Code completion is not yet implemented, but there [is hope](https://twitter.com/Jeff__Ward/status/1014891629612707842) for proper completion...
-- See issues.
 
 ## Install
 
