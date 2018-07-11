@@ -28,6 +28,7 @@ And by `using MyStringTools` it provides overloaded functions via static extensi
 ## Limitations
 
 - The functions are renamed under the hood, so you can't call them dynamically at runtime. Let me know if you're interested in runtime invocation.
+- Currently return types must always be the same.
 - See issues.
 
 ## Terminology
