@@ -1,7 +1,7 @@
 # haxe-overload
 Haxe macro library to support overloaded functions (via static extension, or abstract.)
 
-- Status: beta
+- Status: beta / exploratory
 - [Discussion thread](https://community.haxe.org/t/toying-with-a-macro-for-overloading-via-static-extension/840/)
 
 ## Purpose
