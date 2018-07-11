@@ -21,7 +21,7 @@ It lets you write libraries that look like this:
 
 ![image](https://user-images.githubusercontent.com/2192439/42592807-e0e107a6-8507-11e8-96fe-4800a342d82e.png)
 
-And provides completion that looks like this:
+And by `using MyStringTools` it provides overloaded functions via static extension, even with proper code completion:
 
 ![image](https://user-images.githubusercontent.com/2192439/42592387-93132f28-8506-11e8-9cea-3489b1b0d73e.png)
 
