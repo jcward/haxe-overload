@@ -1,7 +1,7 @@
 # haxe-overload
 Haxe macro library to support overloaded functions (via static extension, or abstract.)
 
-- Status: beta
+- Status: beta / exploratory
 - [Discussion thread](https://community.haxe.org/t/toying-with-a-macro-for-overloading-via-static-extension/840/)
 
 ## Purpose
@@ -19,7 +19,7 @@ function signature, and 2) proper VSCode completion support. That is precisely w
 
 It lets you write libraries that look like this:
 
-![image](https://user-images.githubusercontent.com/2192439/42592807-e0e107a6-8507-11e8-96fe-4800a342d82e.png)
+![image](https://user-images.githubusercontent.com/2192439/42594874-bb05089c-850d-11e8-90b8-7e5cd50ab7d9.png)
 
 And by `using MyStringTools` it provides overloaded functions via static extension, even with proper code completion:
 
@@ -28,6 +28,7 @@ And by `using MyStringTools` it provides overloaded functions via static extensi
 ## Limitations
 
 - The functions are renamed under the hood, so you can't call them dynamically at runtime. Let me know if you're interested in runtime invocation.
+- Currently return types must always be the same.
 - See issues.
 
 ## Terminology
